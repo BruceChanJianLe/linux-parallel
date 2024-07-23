@@ -31,6 +31,44 @@ For file arguments use four colons `::::`, otherwise three colons `:::`.
 seq 1 100 | time parallel -I @@ 'mkdir top-@@; seq 1 10 | parallel -X mkdir top-@@/sub-{}'
 ```
 
+A more realistic example is when you are migrating to a new remote git server.
+Sit back relax, and have a cup of coffee :)!
+
+```bash
+#!/usr/bin/env bash
+
+migration_list=(
+  "ssh://git@gitlab.old.server.com:developer/example1.git"
+  "ssh://git@gitlab.old.server.com:developer/example2.git"
+  "ssh://git@gitlab.old.server.com:developer/example3.git"
+  "ssh://git@gitlab.old.server.com:developer/example4.git"
+  "ssh://git@gitlab.old.server.com:developer/example5.git"
+  "ssh://git@gitlab.old.server.com:developer/example6.git"
+)
+
+function migrate() {
+  # Update migration status
+  echo "started migrating '$1'"
+  git_dir=$(basename "$1" .git)
+  log_file="logs/"$git_dir"_gitlab_migration.log"
+
+  # Clone repo
+  git clone $1 > >(tee -a $log_file) 2> >(tee -a $log_file >&2)
+
+  # Set new url
+  git -C $git_dir remote set-url origin "${1//@old/@new}" > >(tee -a $log_file) 2> >(tee -a $log_file >&2)
+
+  # Migrate repo master
+  git -C $git_dir push --all origin > >(tee -a $log_file) 2> >(tee -a $log_file >&2)
+
+  # Remove repo
+  rm -rf $git_dir
+  echo "finished migrating '$1'"
+}
+
+env_parallel -j0 migrate ::: "${migration_list[@]}"
+```
+
 ## Reference
 - https://omgenomics.com/blog/parallel
 - https://www.gnu.org/software/parallel/
