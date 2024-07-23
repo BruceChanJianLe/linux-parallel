@@ -10,6 +10,7 @@ sudo apt install parallel
 ## Usage
 
 `parallel [options] [command [arguments]] ( ::: arguments | :::+ arguments | :::: argfile(s) | ::::+ argfile(s) ) ...`
+
 ```bash
 # Basics
 parallel echo ::: {1..10}
@@ -24,6 +25,11 @@ parallel --link echo {2}{1} '>' file_{2}{1}.txt ::: {1..10} ::: a b c
 ```
 
 For file arguments use four colons `::::`, otherwise three colons `:::`.
+
+```bash
+# fun example: create 100 with 10 directories inside of each directory
+seq 1 100 | time parallel -I @@ 'mkdir top-@@; seq 1 10 | parallel -X mkdir top-@@/sub-{}'
+```
 
 ## Reference
 - https://omgenomics.com/blog/parallel
