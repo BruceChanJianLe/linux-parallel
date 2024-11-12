@@ -31,6 +31,9 @@ For file arguments use four colons `::::`, otherwise three colons `:::`.
 seq 1 100 | time parallel -I @@ 'mkdir top-@@; seq 1 10 | parallel -X mkdir top-@@/sub-{}'
 ```
 
+
+### Realistic Example 1
+
 A more realistic example is when you are migrating to a new remote git server.
 Sit back relax, and have a cup of coffee :)!
 
@@ -67,6 +70,16 @@ function migrate() {
 }
 
 env_parallel -j0 migrate ::: "${migration_list[@]}"
+```
+
+### Realistic Example 2
+
+Ever wonder how to speed up your scp blazingly fast? Use rsync with parallel instead!
+
+
+```bash
+# You are welcome!
+ssh remote@192.168.10.103 "find /home/developer/bags -name '3d_lidars*.bag'" | parallel -j 8 rsync -avz --progress remote@192.168.10.103:'{}' .
 ```
 
 ## Reference
