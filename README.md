@@ -79,7 +79,7 @@ Ever wonder how to speed up your scp blazingly fast? Use rsync with parallel ins
 
 ```bash
 # You are welcome!
-ssh remote@192.168.10.103 "find /home/developer/bags -name '3d_lidars*.bag'" | parallel -j 8 rsync -avz --progress remote@192.168.10.103:'{}' .
+ssh remote@192.168.10.103 "find /home/developer/bags -name '3d_lidars*.bag'" | parallel -j 8 rsync -vaz --progress remote@192.168.10.103:'{}' .
 ```
 
 ## Reference
